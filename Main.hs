@@ -18,8 +18,17 @@ data Ball  = Ball {
 svgNamespace :: Maybe Text
 svgNamespace = (Just "http://www.w3.org/2000/svg")
 
-drawCircle :: MonadWidget t m => Text -> Double -> Double -> Double -> m ()
-drawCircle color radius x y = do
+addPick :: (Int,Int) -> Map (Int, Ball) () -> Map (Int,Ball) ()
+addPick (x,y) cs = 
+    let position = (fromIntegral x, fromIntegral y)
+        velocity = (0.0,0.0)
+        radius = 10.0
+        color = "Green"
+        ball = Ball position velocity radius color
+    in insert (length cs, ball) () cs
+
+showCircle :: MonadWidget t m => (Int,Ball) -> Dynamic t () -> m () 
+showCircle (index, Ball (x,y) _ radius color ) _  = do
     let 
         t_x =      pack $ show x
         t_y =      pack $ show y
@@ -34,11 +43,6 @@ drawCircle color radius x y = do
     elDynAttrNS' svgNamespace "circle" (constDyn circleAttrs) $ return ()
     return ()
 
-addPick :: (Int,Int) -> Map (Int, Ball) () -> Map (Int,Ball) ()
-addPick (x,y) cs  = let ball = Ball (fromIntegral x, fromIntegral y) (0.0,0.0) 10.0 "Red" in insert (length cs, ball) () cs
-
-showCircle :: MonadWidget t m => (Int,Ball) -> Dynamic t () -> m () 
-showCircle (index, Ball (x,y) _ radius color ) _  = drawCircle color radius x y
 
 main = mainWidget $ do 
     let attrs =   constDyn $ 
