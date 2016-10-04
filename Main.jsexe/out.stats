@@ -5,15 +5,15 @@ containers-0.5.7.1-9AY76Rzb1QLJmP8p4wSZRz:281720
 dependent-map-0.2.2.0-Aye7JC6J9Q4ASbo6OrJWec:96769
 dependent-sum-0.3.2.2-7nS29TvovqDNS76jfcaer:3509
 exception-transformers-0.4.0.4-J9YAqZKciXL3MfrHBDw5Iu:10600
-ghc-prim:                34812
+ghc-prim:                36055
 ghcjs-base-0.2.0.0-LVG5gWl9dFjHHRfyhRxvZP:7977
 ghcjs-dom-0.2.3.1-6qX2PLzkmzh2kwPJafhipW:152827
 ghcjs-prim-0.1.0.0-IFhsWclGfLr1HfhUvIVylA:12012
 integer-gmp:             50226
-main:                    29881
+main:                    43381
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN:2172
 reflex-0.5.0-Ltuaubz1bCa8R8AxMsLzlx:873047
-reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:598968
+reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:599112
 text-1.2.2.1-1XjsQ0Vb7BTChTwQbqjN2E:42970
 these-0.7.1-6x0ReCW2wzq1xZQOYaHO8P:3133
 transformers-0.5.2.0-Lvs3wlJMkpyLRFNHJ8pmeB:16311
@@ -110,7 +110,7 @@ exception-transformers-0.4.0.4-J9YAqZKciXL3MfrHBDw5Iu
 
 ghc-prim
     GHC.CString:                        4537
-    GHC.Classes:                        26576
+    GHC.Classes:                        27819
     GHC.IntWord64:                      312
     GHC.Tuple:                          1080
     GHC.Types:                          2307
@@ -142,7 +142,7 @@ integer-gmp
     GHC.Integer.Type:                   50226
 
 main
-    Main:                               29881
+    Main:                               43381
 
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN
     Control.Monad.Ref:                  2172
@@ -163,7 +163,7 @@ reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ
     Foreign.JavaScript.TH:              34626
     Reflex.Dom.Builder.Class:           27975
     Reflex.Dom.Builder.Class.Events:    139718
-    Reflex.Dom.Builder.Immediate:       309139
+    Reflex.Dom.Builder.Immediate:       309283
     Reflex.Dom.Internal:                24701
     Reflex.Dom.Old:                     1714
     Reflex.Dom.Widget.Basic:            61095
@@ -184,5 +184,5 @@ transformers-0.5.2.0-Lvs3wlJMkpyLRFNHJ8pmeB
 
 
 
-packed metadata: 556720
+packed metadata: 558854
 
