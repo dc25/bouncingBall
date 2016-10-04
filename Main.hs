@@ -33,8 +33,7 @@ addPick point cs  = insert (length cs, point) () cs
 showCircle :: MonadWidget t m => (Int,Point) -> Dynamic t () -> m () 
 showCircle (index, (x,y)) _  = drawCircle "Red" 10 x y
 
-circleBox :: MonadWidget t m => m () 
-circleBox = do
+main = mainWidget $ do 
     let attrs =   constDyn $ 
                       fromList 
                           [ ("width" , "500")
@@ -55,6 +54,4 @@ circleBox = do
 
     return ()
 
-
-main = mainWidget circleBox
 
