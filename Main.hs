@@ -27,6 +27,8 @@ width = 600
 vflip :: Double -> Double
 vflip y = fromIntegral height - y
 
+data Color = Red | Green | Blue | Orange | Yellow | Purple deriving (Show, Bounded, Enum)
+
 data Cmd = Tick | Pick (Int, Int) | Poke Int
 
 data Ball  = Ball { position :: Point,
@@ -58,8 +60,12 @@ update (Pick (x,y)) (gen,cs) =
     let position = (fromIntegral x, vflip $ fromIntegral y)
         velocity = (0.0,0.0)
         (radius, gen') = randomR (10.0, 20.0) gen 
-        color = "Green"
-        ball = Ball position velocity radius color
+        (colorIndex, gen'') = 
+            randomR (fromEnum (minBound :: Color), 
+                     fromEnum (maxBound :: Color) ) gen'
+
+        color = toEnum colorIndex :: Color
+        ball = Ball position velocity radius $ (pack.show) color
     in (gen', ball : cs)
 
 update Tick (gen,cs) = (gen, fmap fall cs)
