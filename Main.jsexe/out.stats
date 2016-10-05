@@ -1,19 +1,20 @@
 code size summary per package:
 
-base:                    510286
-containers-0.5.7.1-9AY76Rzb1QLJmP8p4wSZRz:282139
+base:                    538578
+containers-0.5.7.1-9AY76Rzb1QLJmP8p4wSZRz:262336
 dependent-map-0.2.2.0-Aye7JC6J9Q4ASbo6OrJWec:96769
 dependent-sum-0.3.2.2-7nS29TvovqDNS76jfcaer:3509
 exception-transformers-0.4.0.4-J9YAqZKciXL3MfrHBDw5Iu:10600
-ghc-prim:                40633
+ghc-prim:                41164
 ghcjs-base-0.2.0.0-LVG5gWl9dFjHHRfyhRxvZP:7977
 ghcjs-dom-0.2.3.1-6qX2PLzkmzh2kwPJafhipW:152827
 ghcjs-prim-0.1.0.0-IFhsWclGfLr1HfhUvIVylA:12012
-integer-gmp:             81964
-main:                    57210
+integer-gmp:             86279
+main:                    83048
+random-1.1-4yODkowlqmVH67qh6sFaKw:48662
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN:2172
 reflex-0.5.0-Ltuaubz1bCa8R8AxMsLzlx:875573
-reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:617317
+reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:617827
 text-1.2.2.1-1XjsQ0Vb7BTChTwQbqjN2E:42970
 these-0.7.1-6x0ReCW2wzq1xZQOYaHO8P:3133
 time-1.6.0.1-Lja9T8bqIudL0xdsRMOCyg:10763
@@ -30,7 +31,7 @@ base
     Control.Monad.IO.Class:             612
     Data.Either:                        12309
     Data.Fixed:                         4190
-    Data.Foldable:                      1704
+    Data.Foldable:                      1514
     Data.Functor:                       108
     Data.Functor.Compose:               103
     Data.List.NonEmpty:                 20896
@@ -52,12 +53,12 @@ base
     GHC.Arr:                            3767
     GHC.Base:                           9745
     GHC.Conc.Sync:                      8495
-    GHC.Enum:                           21205
+    GHC.Enum:                           25470
     GHC.Err:                            546
     GHC.Exception:                      20931
     GHC.Fingerprint:                    1524
     GHC.Fingerprint.Type:               745
-    GHC.Float:                          59811
+    GHC.Float:                          74831
     GHC.Foreign:                        12274
     GHC.ForeignPtr:                     1314
     GHC.IO:                             3542
@@ -76,26 +77,27 @@ base
     GHC.IO.Handle.Types:                3571
     GHC.IO.Unsafe:                      375
     GHC.IORef:                          166
-    GHC.Int:                            790
-    GHC.List:                           11741
+    GHC.Int:                            7582
+    GHC.List:                           13171
     GHC.MVar:                           188
     GHC.Num:                            3347
     GHC.Ptr:                            631
-    GHC.Real:                           25234
+    GHC.Real:                           25389
     GHC.STRef:                          648
-    GHC.Show:                           23742
+    GHC.Show:                           24053
     GHC.Stack.CCS:                      4098
-    GHC.Stack.Types:                    1547
+    GHC.Stack.Types:                    2055
     GHC.Storable:                       1084
     GHC.TopHandler:                     13352
     GHC.Weak:                           188
     GHC.Word:                           2113
+    System.CPUTime:                     1
     System.Posix.Internals:             15974
 
 containers-0.5.7.1-9AY76Rzb1QLJmP8p4wSZRz
     Data.IntMap.Base:                   26114
     Data.IntMap.Strict:                 10456
-    Data.Map.Base:                      157148
+    Data.Map.Base:                      137345
     Data.Map.Strict:                    12624
     Data.Set.Base:                      67375
     Data.Tree:                          8422
@@ -114,7 +116,7 @@ exception-transformers-0.4.0.4-J9YAqZKciXL3MfrHBDw5Iu
 
 ghc-prim
     GHC.CString:                        4537
-    GHC.Classes:                        32397
+    GHC.Classes:                        32928
     GHC.IntWord64:                      312
     GHC.Tuple:                          1080
     GHC.Types:                          2307
@@ -143,10 +145,13 @@ ghcjs-prim-0.1.0.0-IFhsWclGfLr1HfhUvIVylA
     GHCJS.Prim.Internal:                4874
 
 integer-gmp
-    GHC.Integer.Type:                   81964
+    GHC.Integer.Type:                   86279
 
 main
-    Main:                               57210
+    Main:                               83048
+
+random-1.1-4yODkowlqmVH67qh6sFaKw
+    System.Random:                      48662
 
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN
     Control.Monad.Ref:                  2172
@@ -167,11 +172,11 @@ reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ
     Foreign.JavaScript.TH:              34626
     Reflex.Dom.Builder.Class:           29153
     Reflex.Dom.Builder.Class.Events:    139874
-    Reflex.Dom.Builder.Immediate:       310190
-    Reflex.Dom.Internal:                24701
-    Reflex.Dom.Old:                     6230
-    Reflex.Dom.Time:                    11448
-    Reflex.Dom.Widget.Basic:            61095
+    Reflex.Dom.Builder.Immediate:       310286
+    Reflex.Dom.Internal:                24952
+    Reflex.Dom.Old:                     6276
+    Reflex.Dom.Time:                    11551
+    Reflex.Dom.Widget.Basic:            61109
 
 text-1.2.2.1-1XjsQ0Vb7BTChTwQbqjN2E
     Data.Text:                          25304
@@ -197,5 +202,5 @@ unbounded-delays-0.1.0.9-2kdACByAZph7DKPj2g2mjk
 
 
 
-packed metadata: 588181
+packed metadata: 609254
 
