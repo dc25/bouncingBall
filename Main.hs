@@ -77,35 +77,36 @@ showBall (index, Ball (x,y) _ radius color ) _  = do
     (el,_) <- elStopPropagationNS svgns "g" Mousedown $ elDynAttrNS' svgns "circle" (constDyn circleAttrs) $ return ()
     return $ fmap (const $ Poke index) $ domEvent Mousedown el
 
+draw :: MonadWidget t m => Dynamic t (Map (Int,Ball) ()) -> m (Event t Cmd)
+draw balls = do
+    pokeEventWithKeys <- listWithKey balls showBall
+    let pokeEvent = switch $ (leftmost . elems) <$> current pokeEventWithKeys
+    return pokeEvent
+
 view :: MonadWidget t m => Dynamic t (Map (Int,Ball) ()) -> m (Event t Cmd)
 view balls = do
-        pokeEventWithKeys <- listWithKey balls showBall
-        let pokeEvent = switch $ (leftmost . elems) <$> current pokeEventWithKeys
-        return pokeEvent
-
-main = mainWidget $ do 
     tick <- tickLossy  updateFrequency =<< liftIO getCurrentTime
-    let attrs =   constDyn $ 
-                      fromList 
-                          [ ("width" , pack $ show width)
-                          , ("height", pack $ show height)
-                          , ("style" , "border:solid; margin:8em")
-                          ]
-    rec 
-        (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ view balls
+    let attrs = constDyn $ 
+                    fromList 
+                        [ ("width" , pack $ show width)
+                        , ("height", pack $ show height)
+                        , ("style" , "border:solid; margin:8em")
+                        ]
 
-        mouseEvent <- wrapDomEvent 
-                          (_element_raw elm) 
-                          (onEventName Mousedown) 
-                          mouseOffsetXY
+    (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ draw balls
 
-        let events = leftmost [ ev 
-                              , fmap Pick mouseEvent 
-                              , fmap (const Tick) tick 
-                              ]
+    mouseEvent <- wrapDomEvent 
+                      (_element_raw elm) 
+                      (onEventName Mousedown) 
+                      mouseOffsetXY
 
-        balls <- foldDyn update empty events
+    return $ leftmost [ ev 
+                      , fmap Pick mouseEvent 
+                      , fmap (const Tick) tick 
+                      ]
 
+main = mainWidget $ mdo 
+    event <- view =<< foldDyn update empty event
     return ()
 
 
