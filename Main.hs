@@ -65,8 +65,7 @@ update Tick cs =
     fromList $ fmap fall $ toList cs
 
 update (Poke index) cs = 
-    -- fromList $ filter (\((i,_),_) -> i /= index) $ toList cs
-    fromList []
+    fromList $ filter (\((i,_),_) -> i /= index) $ toList cs
 
 showBall :: MonadWidget t m => (Int,Ball) -> Dynamic t () -> m (Event t Cmd)
 showBall (index, Ball (x,y) _ radius color ) _  = do
@@ -75,11 +74,11 @@ showBall (index, Ball (x,y) _ radius color ) _  = do
                                , ( "r",      pack $ show radius)
                                , ( "style",  "fill:" `DT.append` color) ] 
 
-    (el,_) <- elDynAttrNS' svgNamespace "circle" (constDyn circleAttrs) $ return ()
-    return $ fmap (const $ Poke index) $ domEvent Click el
+    (el,_) <- elStopPropagationNS svgNamespace "g" Mousedown $ elDynAttrNS' svgNamespace "circle" (constDyn circleAttrs) $ return ()
+    return $ fmap (const $ Poke index) $ domEvent Mousedown el
 
-showBalls :: MonadWidget t m => Dynamic t (Map (Int,Ball) ()) -> m (Event t Cmd)
-showBalls balls = do
+view :: MonadWidget t m => Dynamic t (Map (Int,Ball) ()) -> m (Event t Cmd)
+view balls = do
         pokeEventWithKeys <- listWithKey balls showBall
         let pokeEvent = switch $ (leftmost . elems) <$> current pokeEventWithKeys
         return pokeEvent
@@ -94,16 +93,17 @@ main = mainWidget $ do
                           ]
     rec 
         (elm, ev) <- elDynAttrNS' svgNamespace "svg" 
-                         attrs $ showBalls balls
+                         attrs $ view balls
 
         mouseEvent <- wrapDomEvent 
                           (_element_raw elm) 
                           (onEventName Mousedown) 
                           mouseOffsetXY
 
-        let events = leftmost [ev, 
-                               fmap Pick mouseEvent, 
-                               fmap (const Tick) tick ]
+        let events = leftmost [ ev 
+                              , fmap Pick mouseEvent 
+                              , fmap (const Tick) tick 
+                              ]
 
         balls <- foldDyn update empty events
 
