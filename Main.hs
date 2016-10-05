@@ -43,29 +43,29 @@ updateFrequency = 0.1
 acceleration :: Vector
 acceleration = (0.0, 3.0)
 
-fall :: ((Int, Ball),()) -> ((Int, Ball),())
-fall ((i, b),()) = 
+fall :: Ball -> Ball
+fall b = 
     let b' = b { position = position b `minus` velocity b,
                  velocity = velocity b `plus` acceleration }
         b'' = if (snd.position) b' > 0.0 
               then b'
               else b' { velocity = bounce (velocity b) }
-    in ((i, b''),())
+    in b''
 
-update :: Cmd -> Map (Int, Ball) () -> Map (Int,Ball) ()
+update :: Cmd -> [Ball] -> [Ball] 
 update (Pick (x,y)) cs = 
     let position = (fromIntegral x, vflip $ fromIntegral y)
         velocity = (0.0,0.0)
         radius = 50.0
         color = "Green"
         ball = Ball position velocity radius color
-    in insert (length cs, ball) () cs
+    in ball : cs
 
-update Tick cs = 
-    fromList $ fmap fall $ toList cs
+update Tick cs = fmap fall cs
 
 update (Poke index) cs = 
-    fromList $ filter (\((i,_),_) -> i /= index) $ toList cs
+    let (cs0, cs1) = splitAt index cs 
+    in cs0 ++ tail cs1
 
 showBall :: MonadWidget t m => (Int,Ball) -> Dynamic t () -> m (Event t Cmd)
 showBall (index, Ball (x,y) _ radius color ) _  = do
@@ -77,13 +77,13 @@ showBall (index, Ball (x,y) _ radius color ) _  = do
     (el,_) <- elStopPropagationNS svgns "g" Mousedown $ elDynAttrNS' svgns "circle" (constDyn circleAttrs) $ return ()
     return $ fmap (const $ Poke index) $ domEvent Mousedown el
 
-draw :: MonadWidget t m => Dynamic t (Map (Int,Ball) ()) -> m (Event t Cmd)
+draw :: MonadWidget t m => Dynamic t [Ball] -> m (Event t Cmd)
 draw balls = do
-    pokeEventWithKeys <- listWithKey balls showBall
-    let pokeEvent = switch $ (leftmost . elems) <$> current pokeEventWithKeys
-    return pokeEvent
+    let ballMap = fmap (fromList.(\b -> zip (zip [0..] b) $ repeat ())) balls
+    pokeEventWithKeys <- listWithKey ballMap showBall
+    return $ switch $ (leftmost . elems) <$> current pokeEventWithKeys
 
-view :: MonadWidget t m => Dynamic t (Map (Int,Ball) ()) -> m (Event t Cmd)
+view :: MonadWidget t m => Dynamic t [Ball]  -> m (Event t Cmd)
 view balls = do
     tick <- tickLossy  updateFrequency =<< liftIO getCurrentTime
     let attrs = constDyn $ 
@@ -106,7 +106,7 @@ view balls = do
                       ]
 
 main = mainWidget $ mdo 
-    event <- view =<< foldDyn update empty event
+    event <- view =<< foldDyn update [] event
     return ()
 
 
