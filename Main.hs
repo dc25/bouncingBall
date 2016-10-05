@@ -57,10 +57,10 @@ update :: Cmd -> (StdGen ,[Ball]) -> (StdGen ,[Ball])
 update (Pick (x,y)) (gen,cs) = 
     let position = (fromIntegral x, vflip $ fromIntegral y)
         velocity = (0.0,0.0)
-        radius = 50.0
+        (radius, gen') = randomR (10.0, 20.0) gen 
         color = "Green"
         ball = Ball position velocity radius color
-    in (gen, ball : cs)
+    in (gen', ball : cs)
 
 update Tick (gen,cs) = (gen, fmap fall cs)
 
