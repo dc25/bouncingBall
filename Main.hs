@@ -21,6 +21,8 @@ vbounce (x0,y0) = (x0, -y0)
 hbounce :: (Double, Double) -> (Double, Double) 
 hbounce (x0,y0) = (-x0, y0)
 
+bounce = vbounce.hbounce
+
 height = 400
 width = 600
 
@@ -51,14 +53,17 @@ fall b =
     let b' = b { position = position b `plus` velocity b,
                  velocity = velocity b `plus` acceleration }
 
-        b'' = if (snd.position) b' > 0.0 
-              then b'
-              else b' { velocity = vbounce (velocity b) }
+        above = (snd.position) b' > 0.0 
+        between = (fst.position) b' > 0.0 && (fst.position) b' < fromIntegral width 
 
-        b''' = if ( ((fst.position) b'' > 0.0 ) && ((fst.position) b'' < fromIntegral width ) )
-              then b''
-              else b'' { velocity = hbounce (velocity b') }
-    in b'''
+        b'' = if above
+              then if between
+                   then b'
+                   else b' { velocity = hbounce (velocity b) }  
+              else if between
+                   then b' { velocity = vbounce (velocity b) }  -- 
+                   else b' { velocity = bounce  (velocity b) }  -- 
+    in b''
 
 update :: Cmd -> (StdGen ,[Ball]) -> (StdGen ,[Ball])
 update (Pick (x,y)) (gen,cs) = 
