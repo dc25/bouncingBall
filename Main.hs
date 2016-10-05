@@ -2,7 +2,7 @@
 {-# LANGUAGE RecursiveDo #-}
 import Reflex
 import Reflex.Dom 
-import Data.Map (Map, fromList, toList, insert, empty, elems)
+import Data.Map (fromList, elems)
 import Data.Text as DT (Text, pack, append)
 import GHCJS.DOM.EventM (mouseOffsetXY) 
 import Data.Time.Clock (NominalDiffTime, getCurrentTime)
@@ -15,11 +15,11 @@ type Vector = (Double,Double)
 plus :: (Double, Double) -> (Double, Double) -> (Double, Double)
 plus (x0,y0) (x1, y1) = (x0+x1, y0+y1)
 
-minus :: (Double, Double) -> (Double, Double) -> (Double, Double)
-minus (x0,y0) (x1, y1) = (x0-x1, y0-y1)
+vbounce :: (Double, Double) -> (Double, Double) 
+vbounce (x0,y0) = (x0, -y0)
 
-bounce :: (Double, Double) -> (Double, Double) 
-bounce (x0,y0) = (x0, -y0)
+hbounce :: (Double, Double) -> (Double, Double) 
+hbounce (x0,y0) = (-x0, y0)
 
 height = 400
 width = 600
@@ -44,29 +44,35 @@ updateFrequency :: NominalDiffTime
 updateFrequency = 0.1
 
 acceleration :: Vector
-acceleration = (0.0, 3.0)
+acceleration = (0.0, -3.0)
 
 fall :: Ball -> Ball
 fall b = 
-    let b' = b { position = position b `minus` velocity b,
+    let b' = b { position = position b `plus` velocity b,
                  velocity = velocity b `plus` acceleration }
+
         b'' = if (snd.position) b' > 0.0 
               then b'
-              else b' { velocity = bounce (velocity b) }
-    in b''
+              else b' { velocity = vbounce (velocity b) }
+
+        b''' = if ( ((fst.position) b'' > 0.0 ) && ((fst.position) b'' < fromIntegral width ) )
+              then b''
+              else b'' { velocity = hbounce (velocity b') }
+    in b'''
 
 update :: Cmd -> (StdGen ,[Ball]) -> (StdGen ,[Ball])
 update (Pick (x,y)) (gen,cs) = 
     let position = (fromIntegral x, vflip $ fromIntegral y)
-        velocity = (0.0,0.0)
-        (radius, gen') = randomR (10.0, 20.0) gen 
-        (colorIndex, gen'') = 
+        (horizontalVelocity , gen') = randomR ((-25.0), 25.0) gen 
+        velocity = (horizontalVelocity,0.0)
+        (radius, gen'') = randomR (10.0, 20.0) gen'
+        (colorIndex, gen''') = 
             randomR (fromEnum (minBound :: Color), 
-                     fromEnum (maxBound :: Color) ) gen'
+                     fromEnum (maxBound :: Color) ) gen''
 
         color = toEnum colorIndex :: Color
         ball = Ball position velocity radius $ (pack.show) color
-    in (gen', ball : cs)
+    in (gen''', ball : cs)
 
 update Tick (gen,cs) = (gen, fmap fall cs)
 
