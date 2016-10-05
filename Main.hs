@@ -34,8 +34,8 @@ data Ball  = Ball { position :: Point,
                     color    :: Text
                   } deriving (Eq, Ord)
 
-svgNamespace :: Maybe Text
-svgNamespace = (Just "http://www.w3.org/2000/svg")
+svgns :: Maybe Text
+svgns = (Just "http://www.w3.org/2000/svg")
 
 updateFrequency :: NominalDiffTime
 updateFrequency = 0.1
@@ -74,7 +74,7 @@ showBall (index, Ball (x,y) _ radius color ) _  = do
                                , ( "r",      pack $ show radius)
                                , ( "style",  "fill:" `DT.append` color) ] 
 
-    (el,_) <- elStopPropagationNS svgNamespace "g" Mousedown $ elDynAttrNS' svgNamespace "circle" (constDyn circleAttrs) $ return ()
+    (el,_) <- elStopPropagationNS svgns "g" Mousedown $ elDynAttrNS' svgns "circle" (constDyn circleAttrs) $ return ()
     return $ fmap (const $ Poke index) $ domEvent Mousedown el
 
 view :: MonadWidget t m => Dynamic t (Map (Int,Ball) ()) -> m (Event t Cmd)
@@ -92,8 +92,7 @@ main = mainWidget $ do
                           , ("style" , "border:solid; margin:8em")
                           ]
     rec 
-        (elm, ev) <- elDynAttrNS' svgNamespace "svg" 
-                         attrs $ view balls
+        (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ view balls
 
         mouseEvent <- wrapDomEvent 
                           (_element_raw elm) 
