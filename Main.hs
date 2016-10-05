@@ -61,8 +61,8 @@ fall b =
                    then b'
                    else b' { velocity = hbounce (velocity b) }  
               else if between
-                   then b' { velocity = vbounce (velocity b) }  -- 
-                   else b' { velocity = bounce  (velocity b) }  -- 
+                   then b' { velocity = vbounce (velocity b) } 
+                   else b' { velocity = bounce  (velocity b) }  
     in b''
 
 update :: Cmd -> (StdGen ,[Ball]) -> (StdGen ,[Ball])
