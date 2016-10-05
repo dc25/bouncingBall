@@ -7,6 +7,7 @@ import Data.Text as DT (Text, pack, append)
 import GHCJS.DOM.EventM (mouseOffsetXY) 
 import Data.Time.Clock (NominalDiffTime, getCurrentTime)
 import Control.Monad.Trans (liftIO)
+import System.Random
 
 type Point = (Double,Double)
 type Vector = (Double,Double)
@@ -52,29 +53,32 @@ fall b =
               else b' { velocity = bounce (velocity b) }
     in b''
 
-update :: Cmd -> [Ball] -> [Ball] 
-update (Pick (x,y)) cs = 
+update :: Cmd -> (StdGen ,[Ball]) -> (StdGen ,[Ball])
+update (Pick (x,y)) (gen,cs) = 
     let position = (fromIntegral x, vflip $ fromIntegral y)
         velocity = (0.0,0.0)
         radius = 50.0
         color = "Green"
         ball = Ball position velocity radius color
-    in ball : cs
+    in (gen, ball : cs)
 
-update Tick cs = fmap fall cs
+update Tick (gen,cs) = (gen, fmap fall cs)
 
-update (Poke index) cs = 
+update (Poke index) (gen,cs) = 
     let (cs0, cs1) = splitAt index cs 
-    in cs0 ++ tail cs1
+    in (gen, cs0 ++ tail cs1)
 
 showBall :: MonadWidget t m => (Int,Ball) -> Dynamic t () -> m (Event t Cmd)
 showBall (index, Ball (x,y) _ radius color ) _  = do
     let circleAttrs = fromList [ ( "cx",     pack $ show x)
                                , ( "cy",     pack $ show $ vflip y)
                                , ( "r",      pack $ show radius)
-                               , ( "style",  "fill:" `DT.append` color) ] 
+                               , ( "style",  "fill:" `DT.append` color)
+                               ] 
 
-    (el,_) <- elStopPropagationNS svgns "g" Mousedown $ elDynAttrNS' svgns "circle" (constDyn circleAttrs) $ return ()
+    (el,_) <- elStopPropagationNS svgns "g" Mousedown $ 
+                 elDynAttrNS' svgns "circle" (constDyn circleAttrs) $ return ()
+
     return $ fmap (const $ Poke index) $ domEvent Mousedown el
 
 draw :: MonadWidget t m => Dynamic t [Ball] -> m (Event t Cmd)
@@ -86,6 +90,7 @@ draw balls = do
 view :: MonadWidget t m => Dynamic t [Ball]  -> m (Event t Cmd)
 view balls = do
     tick <- tickLossy  updateFrequency =<< liftIO getCurrentTime
+
     let attrs = constDyn $ 
                     fromList 
                         [ ("width" , pack $ show width)
@@ -105,8 +110,11 @@ view balls = do
                       , fmap (const Tick) tick 
                       ]
 
-main = mainWidget $ mdo 
-    event <- view =<< foldDyn update [] event
+main = mainWidget $ do
+    gen <- liftIO getStdGen
+    rec 
+        balls <- fmap snd <$> foldDyn update (gen, []) event
+        event <- view balls
     return ()
 
 
