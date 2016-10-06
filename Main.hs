@@ -15,14 +15,6 @@ type Vector = (Double,Double)
 plus :: (Double, Double) -> (Double, Double) -> (Double, Double)
 plus (x0,y0) (x1, y1) = (x0+x1, y0+y1)
 
-vbounce :: (Double, Double) -> (Double, Double) 
-vbounce (x0,y0) = (x0, -y0)
-
-hbounce :: (Double, Double) -> (Double, Double) 
-hbounce (x0,y0) = (-x0, y0)
-
-bounce = vbounce.hbounce
-
 height = 400
 width = 600
 
@@ -60,13 +52,16 @@ fall b =
         above = (snd.position) b' > 0.0 
         between = (fst.position) b' > 0.0 && (fst.position) b' < fromIntegral width 
 
+        vel = velocity b
+        vel' = velocity b'
+
         b'' = if above
               then if between
                    then b'
-                   else b' { velocity = hbounce (velocity b) }  
+                   else b' {velocity = ((-(fst $ vel)) ,    snd $ vel')   }
               else if between
-                   then b' { velocity = vbounce (velocity b) } 
-                   else b' { velocity = bounce  (velocity b) }  
+                   then b' {velocity = (   fst $ vel'  , (-(snd $ vel)) ) }
+                   else b' {velocity = ((-(fst $ vel)) , (-(snd $ vel)) ) }
     in b''
 
 update :: Cmd -> Model -> Model
