@@ -2,7 +2,7 @@
 {-# LANGUAGE RecursiveDo #-}
 import Reflex
 import Reflex.Dom 
-import Data.Map (fromList, elems)
+import Data.Map (Map, fromList, elems)
 import Data.Text as DT (Text, pack, append)
 import GHCJS.DOM.EventM (mouseOffsetXY) 
 import Data.Time.Clock (NominalDiffTime, getCurrentTime)
@@ -89,13 +89,17 @@ update (Poke index) model@(Model _ cs) =
     let (cs0, cs1) = splitAt index cs 
     in model {balls = cs0 ++ tail cs1}
 
+ballToAttrs :: Ball -> Map Text Text
+ballToAttrs (Ball (x,y) _ radius color) =
+    fromList [ ( "cx",     pack $ show x)
+             , ( "cy",     pack $ show $ vflip y)
+             , ( "r",      pack $ show radius)
+             , ( "style",  "fill:" `DT.append` color)
+             ] 
+
 showBall :: MonadWidget t m => Int -> Dynamic t Ball -> m (Event t Cmd)
 showBall index dBall  = do
-    let dCircleAttrs = fmap (\(Ball (x,y) _ radius color) -> fromList [ ( "cx",     pack $ show x)
-                                                                , ( "cy",     pack $ show $ vflip y)
-                                                                , ( "r",      pack $ show radius)
-                                                                , ( "style",  "fill:" `DT.append` color)
-                                                                ]) dBall
+    let dCircleAttrs = fmap ballToAttrs dBall
 
     (el,_) <- elStopPropagationNS svgns "g" Mousedown $ 
                  elDynAttrNS' svgns "circle" dCircleAttrs $ return ()
