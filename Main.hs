@@ -101,12 +101,6 @@ showBall (index, Ball (x,y) _ radius color ) _  = do
 
     return $ fmap (const $ Poke index) $ domEvent Mousedown el
 
-draw :: MonadWidget t m => Dynamic t [Ball] -> m (Event t Cmd)
-draw balls = do
-    let ballMap = fmap (fromList.(\b -> zip (zip [0..] b) $ repeat ())) balls
-    pokeEventWithKeys <- listWithKey ballMap showBall
-    return $ switch $ (leftmost . elems) <$> current pokeEventWithKeys
-
 view :: MonadWidget t m => Dynamic t Model -> m (Event t Cmd)
 view model = do
     tick <- tickLossy  updateFrequency =<< liftIO getCurrentTime
@@ -118,7 +112,13 @@ view model = do
                         , ("style" , "border:solid; margin:8em")
                         ]
 
-    (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ draw $ fmap balls model
+
+    (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ do 
+        let ballList = fmap balls model 
+            ballListForMap = fmap (\b -> zip (zip [0..] b) $ repeat ()) ballList 
+            ballMap = fmap fromList ballListForMap
+        pokeEventWithKeys <- listWithKey ballMap showBall
+        return $ switch $ (leftmost . elems) <$> current pokeEventWithKeys
 
     mouseEvent <- wrapDomEvent 
                       (_element_raw elm) 
