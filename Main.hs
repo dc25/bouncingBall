@@ -37,7 +37,7 @@ data Ball  = Ball { position :: Point
                   , velocity :: Vector
                   , radius   :: Double
                   , color    :: Text
-                  } deriving (Eq, Ord)
+                  } 
 
 data Model = Model { gen   ::  StdGen 
                    , balls ::  [Ball] 
