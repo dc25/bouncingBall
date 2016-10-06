@@ -39,6 +39,9 @@ data Ball  = Ball { position :: Point,
                     color    :: Text
                   } deriving (Eq, Ord)
 
+data Model = Model { gen   ::  StdGen , balls ::  [Ball] }
+              
+
 svgns :: Maybe Text
 svgns = (Just "http://www.w3.org/2000/svg")
 
@@ -65,8 +68,8 @@ fall b =
                    else b' { velocity = bounce  (velocity b) }  
     in b''
 
-update :: Cmd -> (StdGen ,[Ball]) -> (StdGen ,[Ball])
-update (Pick (x,y)) (gen,cs) = 
+update :: Cmd -> Model -> Model
+update (Pick (x,y)) (Model gen cs)  = 
     let position = (fromIntegral x, vflip $ fromIntegral y)
         (horizontalVelocity , gen') = randomR ((-25.0), 25.0) gen 
         velocity = (horizontalVelocity,0.0)
@@ -77,13 +80,13 @@ update (Pick (x,y)) (gen,cs) =
 
         color = toEnum colorIndex :: Color
         ball = Ball position velocity radius $ (pack.show) color
-    in (gen''', ball : cs)
+    in Model gen'''  (ball : cs)
 
-update Tick (gen,cs) = (gen, fmap fall cs)
+update Tick model@(Model _ cs) = model {balls =(fmap fall cs)}
 
-update (Poke index) (gen,cs) = 
+update (Poke index) model@(Model _ cs) = 
     let (cs0, cs1) = splitAt index cs 
-    in (gen, cs0 ++ tail cs1)
+    in model {balls = cs0 ++ tail cs1}
 
 showBall :: MonadWidget t m => (Int,Ball) -> Dynamic t () -> m (Event t Cmd)
 showBall (index, Ball (x,y) _ radius color ) _  = do
@@ -130,8 +133,8 @@ view balls = do
 main = mainWidget $ do
     gen <- liftIO getStdGen
     rec 
-        balls <- fmap snd <$> foldDyn update (gen, []) event
-        event <- view balls
+        bs <- fmap balls <$> foldDyn update (Model gen []) event
+        event <- view bs
     return ()
 
 
