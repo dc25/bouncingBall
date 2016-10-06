@@ -89,16 +89,16 @@ update (Poke index) model@(Model _ cs) =
     let (cs0, cs1) = splitAt index cs 
     in model {balls = cs0 ++ tail cs1}
 
-showBall :: MonadWidget t m => (Int,Ball) -> Dynamic t () -> m (Event t Cmd)
-showBall (index, Ball (x,y) _ radius color ) _  = do
-    let circleAttrs = fromList [ ( "cx",     pack $ show x)
-                               , ( "cy",     pack $ show $ vflip y)
-                               , ( "r",      pack $ show radius)
-                               , ( "style",  "fill:" `DT.append` color)
-                               ] 
+showBall :: MonadWidget t m => Int -> Dynamic t Ball -> m (Event t Cmd)
+showBall index dBall  = do
+    let dCircleAttrs = fmap (\(Ball (x,y) _ radius color) -> fromList [ ( "cx",     pack $ show x)
+                                                                , ( "cy",     pack $ show $ vflip y)
+                                                                , ( "r",      pack $ show radius)
+                                                                , ( "style",  "fill:" `DT.append` color)
+                                                                ]) dBall
 
     (el,_) <- elStopPropagationNS svgns "g" Mousedown $ 
-                 elDynAttrNS' svgns "circle" (constDyn circleAttrs) $ return ()
+                 elDynAttrNS' svgns "circle" dCircleAttrs $ return ()
 
     return $ fmap (const $ Poke index) $ domEvent Mousedown el
 
@@ -113,7 +113,7 @@ view model = do
                         , ("style" , "border:solid; margin:8em")
                         ]
 
-        ballMap = fmap (fromList.(\b -> zip (zip [0..] b) $ repeat ()).balls) model
+        ballMap = fmap (fromList.(\b -> (zip [0..] b) ).balls) model
 
     (elm, dEventMap) <- elDynAttrNS' svgns "svg" attrs $ listWithKey ballMap showBall
 
