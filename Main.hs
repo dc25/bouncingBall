@@ -29,7 +29,7 @@ width = 600
 vflip :: Double -> Double
 vflip y = fromIntegral height - y
 
-data Color = Red | Green | Blue | Orange | Yellow | Purple deriving (Show, Bounded, Enum)
+data Color = Red | Green | Blue | Orange | Purple deriving (Show, Bounded, Enum)
 
 data Cmd = Tick | Pick (Int, Int) | Poke Int
 
