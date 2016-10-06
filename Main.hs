@@ -107,8 +107,8 @@ draw balls = do
     pokeEventWithKeys <- listWithKey ballMap showBall
     return $ switch $ (leftmost . elems) <$> current pokeEventWithKeys
 
-view :: MonadWidget t m => Dynamic t [Ball]  -> m (Event t Cmd)
-view balls = do
+view :: MonadWidget t m => Dynamic t Model -> m (Event t Cmd)
+view model = do
     tick <- tickLossy  updateFrequency =<< liftIO getCurrentTime
 
     let attrs = constDyn $ 
@@ -118,7 +118,7 @@ view balls = do
                         , ("style" , "border:solid; margin:8em")
                         ]
 
-    (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ draw balls
+    (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ draw $ fmap balls model
 
     mouseEvent <- wrapDomEvent 
                       (_element_raw elm) 
@@ -133,8 +133,8 @@ view balls = do
 main = mainWidget $ do
     gen <- liftIO getStdGen
     rec 
-        bs <- fmap balls <$> foldDyn update (Model gen []) event
-        event <- view bs
+        model <- foldDyn update (Model gen []) event
+        event <- view model
     return ()
 
 
