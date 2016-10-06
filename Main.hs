@@ -33,14 +33,15 @@ data Color = Red | Green | Blue | Orange | Yellow | Purple deriving (Show, Bound
 
 data Cmd = Tick | Pick (Int, Int) | Poke Int
 
-data Ball  = Ball { position :: Point,
-                    velocity :: Vector,
-                    radius   :: Double,
-                    color    :: Text
+data Ball  = Ball { position :: Point
+                  , velocity :: Vector
+                  , radius   :: Double
+                  , color    :: Text
                   } deriving (Eq, Ord)
 
-data Model = Model { gen   ::  StdGen , balls ::  [Ball] }
-              
+data Model = Model { gen   ::  StdGen 
+                   , balls ::  [Ball] 
+                   }
 
 svgns :: Maybe Text
 svgns = (Just "http://www.w3.org/2000/svg")
@@ -103,7 +104,7 @@ showBall (index, Ball (x,y) _ radius color ) _  = do
 
 view :: MonadWidget t m => Dynamic t Model -> m (Event t Cmd)
 view model = do
-    tick <- tickLossy  updateFrequency =<< liftIO getCurrentTime
+    tickEvent <- tickLossy  updateFrequency =<< liftIO getCurrentTime
 
     let attrs = constDyn $ 
                     fromList 
@@ -112,29 +113,24 @@ view model = do
                         , ("style" , "border:solid; margin:8em")
                         ]
 
+        ballMap = fmap (fromList.(\b -> zip (zip [0..] b) $ repeat ()).balls) model
 
-    (elm, ev) <- elDynAttrNS' svgns "svg" attrs $ do 
-        let ballList = fmap balls model 
-            ballListForMap = fmap (\b -> zip (zip [0..] b) $ repeat ()) ballList 
-            ballMap = fmap fromList ballListForMap
-        pokeEventWithKeys <- listWithKey ballMap showBall
-        return $ switch $ (leftmost . elems) <$> current pokeEventWithKeys
+    (elm, dEventMap) <- elDynAttrNS' svgns "svg" attrs $ listWithKey ballMap showBall
 
     mouseEvent <- wrapDomEvent 
                       (_element_raw elm) 
                       (onEventName Mousedown) 
                       mouseOffsetXY
 
-    return $ leftmost [ ev 
+    return $ leftmost [ fmap (const Tick) tickEvent 
+                      , switch $ (leftmost . elems) <$> current dEventMap
                       , fmap Pick mouseEvent 
-                      , fmap (const Tick) tick 
                       ]
 
 main = mainWidget $ do
     gen <- liftIO getStdGen
     rec 
-        model <- foldDyn update (Model gen []) event
-        event <- view model
+        model <- foldDyn update (Model gen []) =<< view model
     return ()
 
 
