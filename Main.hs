@@ -127,8 +127,8 @@ view model = do
                       mouseOffsetXY
 
     return $ leftmost [ fmap (const Tick) tickEvent 
-                      , switch $ (leftmost . elems) <$> current dEventMap
                       , fmap Pick mouseEvent 
+                      , switch $ (leftmost . elems) <$> current dEventMap
                       ]
 
 main = mainWidget $ do
