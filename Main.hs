@@ -23,7 +23,7 @@ vflip y = fromIntegral height - y
 
 data Color = Red | Green | Blue | Orange | Purple deriving (Show, Bounded, Enum)
 
-data Cmd = Tick | Pick (Int, Int) | Poke Int
+data Cmd = Tick | Pick (Int, Int) | Pop Int
 
 data Ball  = Ball { position :: Point
                   , velocity :: Vector
@@ -80,7 +80,7 @@ update (Pick (x,y)) (Model gen cs)  =
 
 update Tick model@(Model _ cs) = model {balls =(fmap fall cs)}
 
-update (Poke index) model@(Model _ cs) = 
+update (Pop index) model@(Model _ cs) = 
     let (cs0, cs1) = splitAt index cs 
     in model {balls = cs0 ++ tail cs1}
 
@@ -99,7 +99,7 @@ showBall index dBall  = do
     (el,_) <- elStopPropagationNS svgns "g" Mousedown $ 
                  elDynAttrNS' svgns "circle" dCircleAttrs $ return ()
 
-    return $ fmap (const $ Poke index) $ domEvent Mousedown el
+    return $ fmap (const $ Pop index) $ domEvent Mousedown el
 
 view :: MonadWidget t m => Dynamic t Model -> m (Event t Cmd)
 view model = do
@@ -114,16 +114,16 @@ view model = do
 
         ballMap = fmap (fromList.(\b -> (zip [0..] b) ).balls) model
 
-    (elm, dEventMap) <- elDynAttrNS' svgns "svg" attrs $ listWithKey ballMap showBall
+    (elm, dPopEventMap) <- elDynAttrNS' svgns "svg" attrs $ listWithKey ballMap showBall
 
-    mouseEvent <- wrapDomEvent 
+    pickEvent <- wrapDomEvent 
                       (_element_raw elm) 
                       (onEventName Mousedown) 
                       mouseOffsetXY
 
     return $ leftmost [ fmap (const Tick) tickEvent 
-                      , fmap Pick mouseEvent 
-                      , switch $ (leftmost . elems) <$> current dEventMap
+                      , fmap Pick pickEvent 
+                      , switch $ (leftmost . elems) <$> current dPopEventMap
                       ]
 
 main = mainWidget $ do
@@ -131,5 +131,3 @@ main = mainWidget $ do
     rec 
         model <- foldDyn update (Model gen []) =<< view model
     return ()
-
-
