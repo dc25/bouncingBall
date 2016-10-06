@@ -10,11 +10,11 @@ ghcjs-base-0.2.0.0-LVG5gWl9dFjHHRfyhRxvZP:7977
 ghcjs-dom-0.2.3.1-6qX2PLzkmzh2kwPJafhipW:152827
 ghcjs-prim-0.1.0.0-IFhsWclGfLr1HfhUvIVylA:12012
 integer-gmp:             86279
-main:                    65446
+main:                    65335
 random-1.1-4yODkowlqmVH67qh6sFaKw:48662
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN:2172
 reflex-0.5.0-Ltuaubz1bCa8R8AxMsLzlx:875573
-reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:617573
+reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:617558
 text-1.2.2.1-1XjsQ0Vb7BTChTwQbqjN2E:42970
 these-0.7.1-6x0ReCW2wzq1xZQOYaHO8P:3133
 time-1.6.0.1-Lja9T8bqIudL0xdsRMOCyg:10763
@@ -148,7 +148,7 @@ integer-gmp
     GHC.Integer.Type:                   86279
 
 main
-    Main:                               65446
+    Main:                               65335
 
 random-1.1-4yODkowlqmVH67qh6sFaKw
     System.Random:                      48662
@@ -173,7 +173,7 @@ reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ
     Reflex.Dom.Builder.Class:           29153
     Reflex.Dom.Builder.Class.Events:    139874
     Reflex.Dom.Builder.Immediate:       310286
-    Reflex.Dom.Internal:                24861
+    Reflex.Dom.Internal:                24846
     Reflex.Dom.Old:                     6230
     Reflex.Dom.Time:                    11448
     Reflex.Dom.Widget.Basic:            61095
@@ -202,5 +202,5 @@ unbounded-delays-0.1.0.9-2kdACByAZph7DKPj2g2mjk
 
 
 
-packed metadata: 602763
+packed metadata: 602667
 
