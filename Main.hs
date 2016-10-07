@@ -65,22 +65,22 @@ fall b =
                    else b' {velocity = ((-(fst $ vel)) , (-(snd $ vel)) ) }
     in b''
 
-randomParams :: (RandomGen g) => Rand g (Double, Double, Color)
-randomParams = do
-    hVel <-getRandomR (-25.0, 25.0) 
+newBall :: (RandomGen g) => (Int,Int) -> (Rand g Ball)
+newBall (x,y) = do
+    hVelocity <- getRandomR (-25.0, 25.0) 
     radius <- getRandomR (10.0, 20.0) 
     let minColor = fromEnum (minBound :: Color)
         maxColor = fromEnum (maxBound :: Color)
     colorIndex <- getRandomR (minColor, maxColor) 
-    return $ (hVel, radius, toEnum colorIndex :: Color)
+    let position = (fromIntegral x, vflip $ fromIntegral y)
+        velocity = (hVelocity, 0.0)
+        colorText = (pack.show) (toEnum colorIndex :: Color)
+        ball = Ball position velocity radius colorText
+    return ball
 
 update :: Cmd -> Model -> Model
-update (Pick (x,y)) (Model gen cs)  = 
-    let 
-        ((hVel, radius, color), newGen) = runRand randomParams gen 
-        position = (fromIntegral x, vflip $ fromIntegral y)
-        velocity = (hVel,0.0)
-        ball = Ball position velocity radius $ (pack.show) color
+update (Pick location) (Model gen cs)  = 
+    let (ball, newGen) = runRand (newBall location) gen 
     in Model newGen (ball : cs)
 
 update Tick model@(Model _ cs) = model {balls =(fmap fall cs)}
