@@ -2,12 +2,13 @@
 {-# LANGUAGE RecursiveDo #-}
 import Reflex
 import Reflex.Dom 
-import Data.Map (Map, fromList, elems)
+import Data.Map as DM (Map, fromList, elems)
 import Data.Text as DT (Text, pack, append)
 import GHCJS.DOM.EventM (mouseOffsetXY) 
 import Data.Time.Clock (NominalDiffTime, getCurrentTime)
 import Control.Monad.Trans (liftIO)
 import System.Random
+import Control.Monad.Random
 
 type Point = (Double,Double)
 type Vector = (Double,Double)
@@ -64,19 +65,23 @@ fall b =
                    else b' {velocity = ((-(fst $ vel)) , (-(snd $ vel)) ) }
     in b''
 
+randomParams :: (RandomGen g) => Rand g (Double, Double, Color)
+randomParams = do
+    hVel <-getRandomR (-25.0, 25.0) 
+    radius <- getRandomR (10.0, 20.0) 
+    let minColor = fromEnum (minBound :: Color)
+        maxColor = fromEnum (maxBound :: Color)
+    colorIndex <- getRandomR (minColor, maxColor) 
+    return $ (hVel, radius, toEnum colorIndex :: Color)
+
 update :: Cmd -> Model -> Model
 update (Pick (x,y)) (Model gen cs)  = 
-    let position = (fromIntegral x, vflip $ fromIntegral y)
-        (horizontalVelocity , gen') = randomR ((-25.0), 25.0) gen 
-        velocity = (horizontalVelocity,0.0)
-        (radius, gen'') = randomR (10.0, 20.0) gen'
-        (colorIndex, gen''') = 
-            randomR (fromEnum (minBound :: Color), 
-                     fromEnum (maxBound :: Color) ) gen''
-
-        color = toEnum colorIndex :: Color
+    let 
+        ((hVel, radius, color), newGen) = runRand randomParams gen 
+        position = (fromIntegral x, vflip $ fromIntegral y)
+        velocity = (hVel,0.0)
         ball = Ball position velocity radius $ (pack.show) color
-    in Model gen'''  (ball : cs)
+    in Model newGen (ball : cs)
 
 update Tick model@(Model _ cs) = model {balls =(fmap fall cs)}
 
@@ -86,11 +91,11 @@ update (Pop index) model@(Model _ cs) =
 
 ballToAttrs :: Ball -> Map Text Text
 ballToAttrs (Ball (x,y) _ radius color) =
-    fromList [ ( "cx",     pack $ show x)
-             , ( "cy",     pack $ show $ vflip y)
-             , ( "r",      pack $ show radius)
-             , ( "style",  "fill:" `DT.append` color)
-             ] 
+    DM.fromList [ ( "cx",     pack $ show x)
+                , ( "cy",     pack $ show $ vflip y)
+                , ( "r",      pack $ show radius)
+                , ( "style",  "fill:" `DT.append` color)
+                ] 
 
 showBall :: MonadWidget t m => Int -> Dynamic t Ball -> m (Event t Cmd)
 showBall index dBall  = do
@@ -106,13 +111,13 @@ view model = do
     tickEvent <- tickLossy  updateFrequency =<< liftIO getCurrentTime
 
     let attrs = constDyn $ 
-                    fromList 
+                    DM.fromList 
                         [ ("width" , pack $ show width)
                         , ("height", pack $ show height)
                         , ("style" , "border:solid; margin:8em")
                         ]
 
-        ballMap = fmap (fromList.(\b -> (zip [0..] b) ).balls) model
+        ballMap = fmap (DM.fromList.(\b -> (zip [0..] b) ).balls) model
 
     (elm, dPopEventMap) <- elDynAttrNS' svgns "svg" attrs $ listWithKey ballMap showBall
 

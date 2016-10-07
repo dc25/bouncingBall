@@ -1,6 +1,7 @@
 code size summary per package:
 
-base:                    538131
+MonadRandom-0.4.2.3-yU9B6NA07r6NAIYrGhBKP:15346
+base:                    539571
 containers-0.5.7.1-9AY76Rzb1QLJmP8p4wSZRz:262336
 dependent-map-0.2.2.0-Aye7JC6J9Q4ASbo6OrJWec:96769
 dependent-sum-0.3.2.2-7nS29TvovqDNS76jfcaer:3509
@@ -10,19 +11,23 @@ ghcjs-base-0.2.0.0-LVG5gWl9dFjHHRfyhRxvZP:7977
 ghcjs-dom-0.2.3.1-6qX2PLzkmzh2kwPJafhipW:152827
 ghcjs-prim-0.1.0.0-IFhsWclGfLr1HfhUvIVylA:12012
 integer-gmp:             86279
-main:                    65331
-random-1.1-4yODkowlqmVH67qh6sFaKw:48662
+main:                    66356
+random-1.1-4yODkowlqmVH67qh6sFaKw:49333
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN:2172
 reflex-0.5.0-Ltuaubz1bCa8R8AxMsLzlx:875573
-reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:617558
+reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ:617753
 text-1.2.2.1-1XjsQ0Vb7BTChTwQbqjN2E:42970
 these-0.7.1-6x0ReCW2wzq1xZQOYaHO8P:3133
 time-1.6.0.1-Lja9T8bqIudL0xdsRMOCyg:10763
-transformers-0.5.2.0-Lvs3wlJMkpyLRFNHJ8pmeB:16311
+transformers-0.5.2.0-Lvs3wlJMkpyLRFNHJ8pmeB:31205
 unbounded-delays-0.1.0.9-2kdACByAZph7DKPj2g2mjk:1670
 
 
 code size per module:
+
+MonadRandom-0.4.2.3-yU9B6NA07r6NAIYrGhBKP
+    Control.Monad.Random:               14664
+    Control.Monad.Random.Class:         682
 
 base
     Control.Concurrent.Chan:            4187
@@ -34,6 +39,7 @@ base
     Data.Foldable:                      1514
     Data.Functor:                       108
     Data.Functor.Compose:               103
+    Data.Functor.Identity:              1203
     Data.List.NonEmpty:                 20896
     Data.Maybe:                         2692
     Data.Monoid:                        1
@@ -54,7 +60,7 @@ base
     GHC.Base:                           9745
     GHC.Conc.Sync:                      8495
     GHC.Enum:                           25470
-    GHC.Err:                            546
+    GHC.Err:                            783
     GHC.Exception:                      20931
     GHC.Fingerprint:                    1524
     GHC.Fingerprint.Type:               745
@@ -148,10 +154,10 @@ integer-gmp
     GHC.Integer.Type:                   86279
 
 main
-    Main:                               65331
+    Main:                               66356
 
 random-1.1-4yODkowlqmVH67qh6sFaKw
-    System.Random:                      48662
+    System.Random:                      49333
 
 ref-tf-0.4.0.1-3hM7hnw7bOB1FwMAOCGwpN
     Control.Monad.Ref:                  2172
@@ -173,9 +179,9 @@ reflex-dom-0.4-BnDS1gYBEmRCSifNxmgtdQ
     Reflex.Dom.Builder.Class:           29153
     Reflex.Dom.Builder.Class.Events:    139874
     Reflex.Dom.Builder.Immediate:       310286
-    Reflex.Dom.Internal:                24846
-    Reflex.Dom.Old:                     6230
-    Reflex.Dom.Time:                    11448
+    Reflex.Dom.Internal:                24952
+    Reflex.Dom.Old:                     6276
+    Reflex.Dom.Time:                    11491
     Reflex.Dom.Widget.Basic:            61095
 
 text-1.2.2.1-1XjsQ0Vb7BTChTwQbqjN2E
@@ -195,6 +201,7 @@ time-1.6.0.1-Lja9T8bqIudL0xdsRMOCyg
 
 transformers-0.5.2.0-Lvs3wlJMkpyLRFNHJ8pmeB
     Control.Monad.Trans.Reader:         11396
+    Control.Monad.Trans.State.Lazy:     14894
     Control.Monad.Trans.State.Strict:   4915
 
 unbounded-delays-0.1.0.9-2kdACByAZph7DKPj2g2mjk
@@ -202,5 +209,5 @@ unbounded-delays-0.1.0.9-2kdACByAZph7DKPj2g2mjk
 
 
 
-packed metadata: 602663
+packed metadata: 615519
 
