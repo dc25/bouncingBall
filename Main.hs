@@ -16,6 +16,9 @@ type Vector = (Double,Double)
 plus :: (Double, Double) -> (Double, Double) -> (Double, Double)
 plus (x0,y0) (x1, y1) = (x0+x1, y0+y1)
 
+dot :: (Double, Double) -> (Double, Double) -> (Double, Double)
+dot (x0,y0) (x1, y1) = (x0*x1, y0*y1)
+
 height = 400
 width = 600
 
@@ -45,35 +48,61 @@ updateFrequency = 0.1
 acceleration :: Vector
 acceleration = (0.0, -3.0)
 
+hDampen = 0.8
+vDampen = 0.8
+
 fall :: Ball -> Ball
 fall b = 
-    let b' = b { position = position b `plus` velocity b,
-                 velocity = velocity b `plus` acceleration }
+    let rad = radius b
+        vPos = snd $ position b
+        vVel = snd $ velocity b
+        vAcc = snd $ acceleration
 
-        above = (snd.position) b' > 0.0 
-        between = (fst.position) b' > 0.0 && (fst.position) b' < fromIntegral width 
+        vPosForward = vPos + vVel
+        vVelForward = vVel + vAcc
 
-        vel = velocity b
-        vel' = velocity b'
+        -- back the acceleration out then negate and dampen
+        vVelUndo = -((vVel - vAcc)*hDampen)  
+        vPosReverse = vPos + vVelUndo
+        vVelReverse = vVelUndo + vAcc
 
-        b'' = if above
-              then if between
-                   then b'
-                   else b' {velocity = ((-(fst $ vel)) ,    snd $ vel')   }
-              else if between
-                   then b' {velocity = (   fst $ vel'  , (-(snd $ vel)) ) }
-                   else b' {velocity = ((-(fst $ vel)) , (-(snd $ vel)) ) }
-    in b''
+        vOk = (vPosForward >= rad) && vPosForward <= fromIntegral height - rad
+
+        vPosNew = if vOk then vPosForward else vPosReverse
+        vVelNew = if vOk then vVelForward else vVelReverse
+
+
+        hPos = fst $ position b
+        hVel = fst $ velocity b
+        hAcc = fst $ acceleration
+
+        hPosForward = hPos + hVel
+        hVelForward = hVel + hAcc
+
+        -- back the acceleration out then negate and dampen
+        hVelUndo = -((hVel - hAcc)*hDampen)  
+        hPosReverse = hPos + hVelUndo
+        hVelReverse = hVelUndo + hAcc
+
+        hOk = (hPosForward >= rad) && hPosForward <= fromIntegral width - rad
+
+        hPosNew = if hOk then hPosForward else hPosReverse
+        hVelNew = if hOk then hVelForward else hVelReverse
+
+    in b { position = (hPosNew, vPosNew), velocity = (hVelNew, vVelNew) }
+        
+
 
 newBall :: (RandomGen g) => (Int,Int) -> (Rand g Ball)
 newBall (x,y) = do
     hVelocity <- getRandomR (-25.0, 25.0) 
-    radius <- getRandomR (10.0, 20.0) 
+    vVelocity <- getRandomR (0.0, 15.0) 
+    radius <- getRandomR (10.0, 30.0) 
     let minColor = fromEnum (minBound :: Color)
         maxColor = fromEnum (maxBound :: Color)
     colorIndex <- getRandomR (minColor, maxColor) 
     let position = (fromIntegral x, vflip $ fromIntegral y)
-        velocity = (hVelocity, 0.0)
+        velocity = (hVelocity, vVelocity)
         colorText = (pack.show) (toEnum colorIndex :: Color)
         ball = Ball position velocity radius colorText
     return ball
