@@ -48,50 +48,37 @@ updateFrequency = 0.1
 acceleration :: Vector
 acceleration = (0.0, -3.0)
 
-hDampen = 0.8
-vDampen = 0.8
+dampen = 1.0
+
+evaluateMove :: (Point -> Double) -> Ball -> Int -> (Double, Double)
+evaluateMove getComponent b limit = 
+    let rad = radius b
+        pos = getComponent $ position b 
+        vel = getComponent $ velocity b
+        acc = getComponent acceleration
+
+        posForward = pos + vel
+        velForward = vel + acc
+
+        -- back the acceleration out then negate and dampen
+        velUndo = -((vel - acc)*dampen)  
+        posReverse = pos + velUndo
+        velReverse = velUndo + acc
+
+        ok =    posForward >= rad 
+             && posForward <= fromIntegral limit - rad
+
+        posNew = if ok then posForward else posReverse
+        velNew = if ok then velForward else velReverse
+    in (posNew, velNew)
 
 fall :: Ball -> Ball
 fall b = 
-    let rad = radius b
-        vPos = snd $ position b
-        vVel = snd $ velocity b
-        vAcc = snd $ acceleration
-
-        vPosForward = vPos + vVel
-        vVelForward = vVel + vAcc
-
-        -- back the acceleration out then negate and dampen
-        vVelUndo = -((vVel - vAcc)*hDampen)  
-        vPosReverse = vPos + vVelUndo
-        vVelReverse = vVelUndo + vAcc
-
-        vOk = (vPosForward >= rad) && vPosForward <= fromIntegral height - rad
-
-        vPosNew = if vOk then vPosForward else vPosReverse
-        vVelNew = if vOk then vVelForward else vVelReverse
-
-
-        hPos = fst $ position b
-        hVel = fst $ velocity b
-        hAcc = fst $ acceleration
-
-        hPosForward = hPos + hVel
-        hVelForward = hVel + hAcc
-
-        -- back the acceleration out then negate and dampen
-        hVelUndo = -((hVel - hAcc)*hDampen)  
-        hPosReverse = hPos + hVelUndo
-        hVelReverse = hVelUndo + hAcc
-
-        hOk = (hPosForward >= rad) && hPosForward <= fromIntegral width - rad
-
-        hPosNew = if hOk then hPosForward else hPosReverse
-        hVelNew = if hOk then hVelForward else hVelReverse
-
-    in b { position = (hPosNew, vPosNew), velocity = (hVelNew, vVelNew) }
-        
-
+    let (hPosNew, hVelNew) = evaluateMove fst b width
+        (vPosNew, vVelNew) = evaluateMove snd b height
+    in b { position = (hPosNew, vPosNew)
+         , velocity = (hVelNew, vVelNew) 
+         }
 
 newBall :: (RandomGen g) => (Int,Int) -> (Rand g Ball)
 newBall (x,y) = do
