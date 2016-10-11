@@ -48,7 +48,7 @@ updateFrequency = 0.1
 acceleration :: Vector
 acceleration = (0.0, -3.0)
 
-dampen = 1.0
+dampen = 0.8
 
 evaluateMove :: (Point -> Double) -> Ball -> Int -> (Double, Double)
 evaluateMove getComponent b limit = 
